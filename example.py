@@ -88,19 +88,21 @@ class Example(QMainWindow):
                                          self.nowbot, dointer, lastif, notfunc)
 
     def returntostart(self):
-        self.matrix[self.nowbot][2] = 0
-        self.matrix[self.nowbot][3].setStyleSheet(
-            'background-color : gray;')
         self.nowbot = (0, 0)
         self.matrix[self.nowbot][2] = 2
         self.matrix[self.nowbot][3].setStyleSheet(
             'background-color : red;')
+        for i in list(self.matrix.keys())[1:]:
+            self.matrix[i][2] = 0
+            self.matrix[i][3].setStyleSheet(
+                'background-color : gray;')
 
     def interpritator(self,
                       s, pohui, pohui2, nowbot, dointer, lastif, notfunc):
         self.openif = 0
         self.openrep = 0
         self.openproc = 0
+        errorflag = False
 
         self.v = 0
         for j, i in enumerate(s.split('\n')):
@@ -121,31 +123,42 @@ class Example(QMainWindow):
                     self.matrix[nowbot][3].setStyleSheet(
                         'background-color : red;')
             except BorderError as ex:
+                errorflag = True
+                self.returntostart()
                 self.printexception(ex, j + 1)
                 break
             except ParamError as ex:
+                errorflag = True
+                self.returntostart()
                 self.printexception(ex, j + 1)
                 break
             except VoidError as ex:
+                errorflag = True
+                self.returntostart()
                 self.printexception(ex, j + 1)
                 break
             except CodeError as ex:
+                errorflag = True
+                self.returntostart()
                 self.printexception(ex, j + 1)
                 break
-            except Exception as ex:
-                print(ex)
-
-        try:
-            if self.openif != 0:
-                raise CodeError('Незаконченная или неначатая команда IFBLOCK')
-            elif self.openrep != 0:
-                raise CodeError('Незаконченная или неначатая команда REPEAT')
-            elif self.openproc != 0:
-                raise CodeError('Незаконченная или неначатая команда'
-                                ' PROCEDURE')
-        except CodeError as ex:
-            self.errorplace.setPlainText(f'Code:\n'
-                                         f'{ex}')
+            # except Exception as ex:
+            #     print(ex, j + 1)
+        if not errorflag:
+            try:
+                if self.openif != 0:
+                    self.returntostart()
+                    raise CodeError('Незаконченная или неначатая команда IFBLOCK')
+                elif self.openrep != 0:
+                    self.returntostart()
+                    raise CodeError('Незаконченная или неначатая команда REPEAT')
+                elif self.openproc != 0:
+                    self.returntostart()
+                    raise CodeError('Незаконченная или неначатая команда'
+                                    ' PROCEDURE')
+            except CodeError as ex:
+                self.errorplace.setPlainText(f'Code:\n'
+                                             f'{ex}')
 
         return nowbot
 
@@ -159,6 +172,11 @@ class Example(QMainWindow):
         else:
             command = cstr[0]
             params = cstr[1:]
+
+        for h in params:
+            if h.isdigit():
+                if int(h) > 10000:
+                    raise ParamError('Слишком большое значение переменной')
 
         if command == 'IFBLOCK':
             self.v += 1
@@ -187,9 +205,9 @@ class Example(QMainWindow):
                     if params[0].isdigit():
                         sdv = int(params[0])
                         try:
-                            for i in range(nowbot[1] - 1,
+                            for h in range(nowbot[1] - 1,
                                            nowbot[1] - sdv - 1, -1):
-                                if self.matrix[(nowbot[0], i)][2] == 0:
+                                if self.matrix[(nowbot[0], h)][2] == 0:
                                     pass
                                 else:
                                     raise BorderError(
@@ -210,9 +228,9 @@ class Example(QMainWindow):
                     if params[0].isdigit():
                         sdv = int(params[0])
                         try:
-                            for i in range(nowbot[1] + 1,
+                            for h in range(nowbot[1] + 1,
                                            nowbot[1] + sdv + 1):
-                                if self.matrix[(nowbot[0], i)][2] == 0:
+                                if self.matrix[(nowbot[0], h)][2] == 0:
                                     pass
                                 else:
                                     raise BorderError(
@@ -233,9 +251,9 @@ class Example(QMainWindow):
                     if params[0].isdigit():
                         sdv = int(params[0])
                         try:
-                            for i in range(nowbot[0] + 1,
+                            for h in range(nowbot[0] + 1,
                                            nowbot[0] + sdv + 1):
-                                if self.matrix[(i, nowbot[1])][2] == 0:
+                                if self.matrix[(h, nowbot[1])][2] == 0:
                                     pass
                                 else:
                                     raise BorderError(
@@ -256,9 +274,9 @@ class Example(QMainWindow):
                     if params[0].isdigit():
                         sdv = int(params[0])
                         try:
-                            for i in range(nowbot[0] - 1,
+                            for h in range(nowbot[0] - 1,
                                            nowbot[0] - sdv - 1, -1):
-                                if self.matrix[(i, nowbot[1])][2] == 0:
+                                if self.matrix[(h, nowbot[1])][2] == 0:
                                     pass
                                 else:
                                     raise BorderError(
@@ -330,7 +348,7 @@ class Example(QMainWindow):
                                     countrepeats -= 1
                                 end += 1
                             for _ in range(sdv - 1):
-                                for j2 in range(start, end):
+                                for j2 in range(start, end - 1):
                                     i2 = s.split('\n')[j2]
                                     result = self.inter(s, i2, j2, pohui,
                                                         pohui2, nowbot,
@@ -349,8 +367,6 @@ class Example(QMainWindow):
                                         self.matrix[nowbot][2] = 2
                                         self.matrix[nowbot][3].setStyleSheet(
                                             'background-color : red;')
-                                print('Закончилось', _ + 1, start, end)
-                            print('Повторение', 'last', start, end)
                         else:
                             raise ParamError('Количество повторений не должно '
                                              'быть равно нулю')
