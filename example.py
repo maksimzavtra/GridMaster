@@ -19,7 +19,7 @@ class Example(QMainWindow):
     def initUI(self):
         desktop = app.desktop()
         self.setWindowTitle('GridMaster')
-        x, y = desktop.availableGeometry().width(),\
+        x, y = desktop.availableGeometry().width() - 200,\
                desktop.availableGeometry().height()
         self.setGeometry(0, 0, x, y)
         self.setStyleSheet('background-color : #252422;')
@@ -191,11 +191,12 @@ class Example(QMainWindow):
             self.v -= 1
             self.openrep -= 1
         elif command == 'PROCEDURE':
-            self.v += 1
             self.openproc += 1
         elif command == 'ENDPROC':
-            self.v -= 1
             self.openproc -= 1
+
+        if self.v > 3:
+            raise CodeError('Ограничение по вложенности 3')
 
         if notfunc:
             if dointer == 0 and command == 'UP':
@@ -414,8 +415,6 @@ class Example(QMainWindow):
                                         pohui2[i.split()[1]][1]):
                             i2 = s.split('\n')[j2]
                             self.v += 1
-                            if self.v > 3:
-                                raise CodeError('Ограничение по вложенности 3')
                             result = self.inter(s, i2, j2, pohui,
                                                 pohui2, nowbot,
                                                 dointer, lastif,
@@ -439,7 +438,8 @@ class Example(QMainWindow):
                 else:
                     raise ParamError('Не указан параметр названия функции')
             else:
-                raise CodeError('Несуществующая команда')
+                if dointer == 0:
+                    raise CodeError('Несуществующая команда')
         elif command == 'ENDPROC':
             if i != 'ENDPROC':
                 raise ParamError('Лишние параметры')
