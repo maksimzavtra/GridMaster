@@ -19,34 +19,40 @@ class Example(QMainWindow):
     def initUI(self):
         desktop = app.desktop()
         self.setWindowTitle('GridMaster')
-        x, y = desktop.availableGeometry().width() - 200,\
+        x, y = desktop.availableGeometry().width(),\
                desktop.availableGeometry().height()
-        self.setGeometry(0, 0, x, y)
+        self.setGeometry(-1, 0, x, y)
         self.setStyleSheet('background-color : #252422;')
 
         self.codeplace = QPlainTextEdit(self)
-        self.codeplace.setGeometry(50, 50, x - y - 50, (y - 150) // 3 * 2)
-        self.codeplace.setFont(QFont('Arial', 30))
+        self.codeplace.setGeometry(50, 100, x - y - 50, (y - 200) // 3 * 2)
+        self.codeplace.setFont(QFont('Helvetica [Cronyx]', 30))
         self.codeplace.setStyleSheet('background-color : #2b2c28;'
                                      'color : white;'
                                      'border-radius: 10px;')
 
         self.errorplace = QPlainTextEdit(self)
-        self.errorplace.setGeometry(50, (y - 150) // 3 * 2 + 100, x - y - 50,
-                                   y - (y - 150) // 3 * 2 - 200)
-        self.errorplace.setFont(QFont('Arial', 30))
+        self.errorplace.setGeometry(50, (y - 200) // 3 * 2 + 150, x - y - 50,
+                                   y - (y - 200) // 3 * 2 - 200)
+        self.codeplace.setFont(QFont('Helvetica [Cronyx]', 30))
         self.errorplace.setStyleSheet('background-color : #2b2c28;'
                                       'color : white;'
                                       'border-radius: 10px;')
         self.errorplace.setReadOnly(True)
 
+        buttonsfont = QFont('Helvetica [Cronyx]', 30)
+        buttonsfont.setBold(1)
+
         self.runcode = QPushButton(self)
-        self.runcode.setGeometry(50, 0, 50, 50)
-        self.runcode.setStyleSheet('background-color : green;')
+        self.runcode.setGeometry(50, 25, 200, 50)
+        self.runcode.setFont(buttonsfont)
+        self.runcode.setStyleSheet('background-color : green;'
+                                   'text-align : up;')
         self.runcode.clicked.connect(self.code)
+        self.runcode.setText('START')
 
         self.returnstart = QPushButton(self)
-        self.returnstart.setGeometry(100, 0, 50, 50)
+        self.returnstart.setGeometry(250, 25, 200, 50)
         self.returnstart.setStyleSheet('background-color : blue;')
         self.returnstart.clicked.connect(self.returntostart)
 
@@ -55,9 +61,9 @@ class Example(QMainWindow):
         for i in range(21):
             for j in range(21):
                 tile = QPushButton(self)
-                tile.setGeometry(x - y + 50 + ((x - y + 50) // 21) * i,
-                                 50 + ((x - y + 50) // 21) * j,
-                                 (x - y + 50) // 21, (x - y + 50) // 21)
+                tile.setGeometry(x - y + ((x - y) // 21) * i + 50,
+                                 100 + ((x - y) // 21) * j,
+                                 (x - y) // 21, (x - y) // 21)
                 tile.setStyleSheet('background-color : gray;')
                 self.matrix[(i, j)] = [i, j, 0, tile]
                 self.tilenum[tile] = (i, j)
@@ -93,9 +99,10 @@ class Example(QMainWindow):
         self.matrix[self.nowbot][3].setStyleSheet(
             'background-color : red;')
         for i in list(self.matrix.keys())[1:]:
-            self.matrix[i][2] = 0
-            self.matrix[i][3].setStyleSheet(
-                'background-color : gray;')
+            if self.matrix[i][2] != 1:
+                self.matrix[i][2] = 0
+                self.matrix[i][3].setStyleSheet(
+                    'background-color : gray;')
 
     def interpritator(self,
                       s, pohui, pohui2, nowbot, dointer, lastif, notfunc):
@@ -148,10 +155,12 @@ class Example(QMainWindow):
             try:
                 if self.openif != 0:
                     self.returntostart()
-                    raise CodeError('Незаконченная или неначатая команда IFBLOCK')
+                    raise CodeError('Незаконченная или'
+                                    ' неначатая команда IFBLOCK')
                 elif self.openrep != 0:
                     self.returntostart()
-                    raise CodeError('Незаконченная или неначатая команда REPEAT')
+                    raise CodeError('Незаконченная или'
+                                    ' неначатая команда REPEAT')
                 elif self.openproc != 0:
                     self.returntostart()
                     raise CodeError('Незаконченная или неначатая команда'
