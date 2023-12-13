@@ -2,7 +2,7 @@ import sys
 import sqlite3
 from PyQt5.QtWidgets import \
     QApplication, QMainWindow, QPushButton, QPlainTextEdit
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QFontDatabase
 from errors import *
 
 con = sqlite3.connect("design.sqlite")
@@ -24,46 +24,151 @@ class Example(QMainWindow):
         self.setGeometry(-1, 0, x, y)
         self.setStyleSheet('background-color : #252422;')
 
+        fontid = QFontDatabase.addApplicationFont(
+            'fonts/UbuntuMono-Regular.ttf')
+        families = QFontDatabase.applicationFontFamilies(fontid)
+        font = QFont(families[0], x // 65)
+        if fontid < 0:
+            print('font not loaded')
+
+        self.backgroundcode = QPushButton(self)
+        self.backgroundcode.setGeometry(0, 0, x - y + y // 10, y)
+        self.backgroundcode.setStyleSheet('background-color : #393939;'
+                                          'border-radius: 0px;')
+        self.backgroundcode.setEnabled(False)
+
+        self.runcodebackground = QPushButton(self)
+        self.runcodebackground.setGeometry(x - y + y // 10, 0, x // 10, y // 10)
+        self.runcodebackground.setStyleSheet('background-color : #1C1C1C;'
+                                             'border : 5px solid #24FF00;'
+                                             'border-radius : 0px;'
+                                             'color : white;')
+
+        self.returnstartbackground = QPushButton(self)
+        self.returnstartbackground.setGeometry(x - y + y // 10 + x // 10,
+                                               0, x // 10, y // 10)
+        self.returnstartbackground.setStyleSheet('background-color : #1C1C1C;'
+                                                 'border : 5px solid #FF0000;'
+                                                 'border-radius : 0px;'
+                                                 'color : white;')
+
+        self.menubackground = QPushButton(self)
+        self.menubackground.setGeometry(x - y + y // 10 + x // 5, 0, x // 10,
+                                        y // 10)
+        self.menubackground.setStyleSheet('background-color : #1C1C1C;'
+                                          'border : 5px solid #0500FF;'
+                                          'border-radius : 0px;'
+                                          'color : white;')
+
+        self.filebackground = QPushButton(self)
+        self.filebackground.setGeometry(0, 0, x // 10, y // 10)
+        self.filebackground.setStyleSheet('background-color : #1C1C1C;'
+                                          'border : 5px solid white;'
+                                          'border-radius : 0px;'
+                                          'color : white;')
+
+        self.runningbackground = QPushButton(self)
+        self.runningbackground.setGeometry(0, y // 4 * 3, x // 10, y // 10)
+        self.runningbackground.setStyleSheet('background-color : #1C1C1C;'
+                                             'border : 5px solid white;'
+                                             'border-radius : 0px;'
+                                             'color : white;')
+
+        self.backgroundbuttons = QPushButton(self)
+        self.backgroundbuttons.setGeometry(0, 0, x, y // 20)
+        self.backgroundbuttons.setStyleSheet('background-color : #1C1C1C;'
+                                             'border-radius: 0px;')
+        self.backgroundbuttons.setEnabled(False)
+
+        self.backgroundbuttons2 = QPushButton(self)
+        self.backgroundbuttons2.setGeometry(0, y // 4 * 3, x - y + y // 10,
+                                            y // 20)
+        self.backgroundbuttons2.setStyleSheet('background-color : #1C1C1C;'
+                                              'border-radius: 0px;')
+        self.backgroundbuttons2.setEnabled(False)
+
         self.codeplace = QPlainTextEdit(self)
-        self.codeplace.setGeometry(50, 100, x - y - 50, (y - 200) // 3 * 2)
-        self.codeplace.setFont(QFont('Helvetica [Cronyx]', 30))
-        self.codeplace.setStyleSheet('background-color : #2b2c28;'
+        self.codeplace.setGeometry(x // 200, y // 10,
+                                   x - y + y // 10 - x // 200,
+                                   y // 4 * 3 - y // 10)
+        self.codeplace.setFont(font)
+        self.codeplace.setStyleSheet('background-color : rgba(0, 0, 0, 0);'
                                      'color : white;'
                                      'border-radius: 10px;')
 
         self.errorplace = QPlainTextEdit(self)
-        self.errorplace.setGeometry(50, (y - 200) // 3 * 2 + 150, x - y - 50,
-                                   y - (y - 200) // 3 * 2 - 200)
-        self.codeplace.setFont(QFont('Helvetica [Cronyx]', 30))
-        self.errorplace.setStyleSheet('background-color : #2b2c28;'
+        self.errorplace.setGeometry(x // 200, y // 4 * 3 + y // 10,
+                                    x - y + y // 10 - x // 200,
+                                    y - y // 4 * 3 - y // 10)
+        self.errorplace.setFont(font)
+        self.errorplace.setStyleSheet('background-color : rgba(0, 0, 0, 0);'
                                       'color : white;'
                                       'border-radius: 10px;')
         self.errorplace.setReadOnly(True)
 
-        buttonsfont = QFont('Helvetica [Cronyx]', 30)
-        buttonsfont.setBold(1)
-
         self.runcode = QPushButton(self)
-        self.runcode.setGeometry(50, 25, 200, 50)
-        self.runcode.setFont(buttonsfont)
-        self.runcode.setStyleSheet('background-color : green;'
-                                   'text-align : up;')
+        self.runcode.setGeometry(x - y + y // 10, 0, x // 10, y // 10)
+        self.runcode.setStyleSheet('background-color : rgba(0, 0, 0, 0);'
+                                   'border-radius : 0px;'
+                                   'color : white;')
         self.runcode.clicked.connect(self.code)
-        self.runcode.setText('START')
+        self.runcode.setFont(font)
+        self.runcode.setText('start')
 
         self.returnstart = QPushButton(self)
-        self.returnstart.setGeometry(250, 25, 200, 50)
-        self.returnstart.setStyleSheet('background-color : blue;')
+        self.returnstart.setGeometry(x - y + y // 10 + x // 10,
+                                     0, x // 10, y // 10)
+        self.returnstart.setStyleSheet('background-color : rgba(0, 0, 0, 0);'
+                                       'border-radius : 0px;'
+                                       'color : white;')
         self.returnstart.clicked.connect(self.returntostart)
+        self.returnstart.setFont(font)
+        self.returnstart.setText('return')
+
+        self.menu = QPushButton(self)
+        self.menu.setGeometry(x - y + y // 10 + x // 5, 0, x // 10, y // 10)
+        self.menu.setStyleSheet('background-color : rgba(0, 0, 0, 0);'
+                                'border-radius : 0px;'
+                                'color : white;')
+        # self.menu.clicked.connect()
+        self.menu.setFont(font)
+        self.menu.setText('menu')
+
+        self.file = QPushButton(self)
+        self.file.setGeometry(0, 0, x // 10, y // 10)
+        self.file.setStyleSheet('background-color : rgba(0, 0, 0, 0);'
+                                'border-radius : 0px;'
+                                'color : white;')
+        # self.menu.clicked.connect()
+        self.file.setFont(font)
+        self.file.setText('filename')
+        self.file.setFixedWidth(
+            max(x // 10, min(x - y + y // 10,
+                x // 10 + (len(self.file.text()) - 3) * (x // 85)))
+        )
+        self.filebackground.setFixedWidth(
+            max(x // 10, min(x - y + y // 10,
+                x // 10 + (len(self.file.text()) - 3) * (x // 85)))
+        )
+
+        self.running = QPushButton(self)
+        self.running.setGeometry(0, y // 4 * 3, x // 10, y // 10)
+        self.running.setStyleSheet('background-color : rgba(0, 0, 0, 0);'
+                                   'border-radius : 0px;'
+                                   'color : white;')
+        # self.menu.clicked.connect()
+        self.running.setFont(font)
+        self.running.setText('run')
 
         self.matrix = {}
         self.tilenum = {}
         for i in range(21):
             for j in range(21):
                 tile = QPushButton(self)
-                tile.setGeometry(x - y + ((x - y) // 21) * i + 50,
-                                 100 + ((x - y) // 21) * j,
-                                 (x - y) // 21, (x - y) // 21)
+                tile.setGeometry(x - y + y // 20 + y // 10 + (y - y // 80 * 16) // 21 * i,
+                                 y // 20 * 3 + (y - y // 80 * 16) // 21 * j,
+                                 (y - y // 80 * 16) // 21,
+                                 (y - y // 80 * 16) // 21)
                 tile.setStyleSheet('background-color : gray;')
                 self.matrix[(i, j)] = [i, j, 0, tile]
                 self.tilenum[tile] = (i, j)
@@ -149,8 +254,8 @@ class Example(QMainWindow):
                 self.returntostart()
                 self.printexception(ex, j + 1)
                 break
-            # except Exception as ex:
-            #     print(ex, j + 1)
+            except Exception as ex:
+                print(ex, j + 1)
         if not errorflag:
             try:
                 if self.openif != 0:
