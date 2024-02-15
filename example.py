@@ -21,7 +21,7 @@ class Example(QMainWindow):
         self.setWindowTitle('GridMaster')
         x, y = desktop.availableGeometry().width(),\
                desktop.availableGeometry().height()
-        self.setGeometry(-1, 0, x, y)
+        self.setGeometry(0, 0, x, y)
         self.setStyleSheet('background-color : #252422;')
 
         fontid = QFontDatabase.addApplicationFont(
