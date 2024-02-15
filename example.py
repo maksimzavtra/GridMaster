@@ -141,7 +141,7 @@ class Example(QMainWindow):
                                 'color : white;')
         # self.menu.clicked.connect()
         self.file.setFont(font)
-        self.file.setText('filename')
+        self.file.setText('code')
         self.file.setFixedWidth(
             max(x // 10, min(x - y + y // 10,
                 x // 10 + (len(self.file.text()) - 3) * (x // 85)))
